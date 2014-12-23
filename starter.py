@@ -1,12 +1,12 @@
 ## DM IPT 2 - Rémi, Jules, Lucas - Labyrinthe
 
-# 2 parties majeures à distinguer :
-#  - Gestion de la partie (2 personne)
-#  - Interface (1 personne)
+# * Gestion de la partie (2 personne) = { Fonctions sur l'état du jeu ; Dynamiques du jeu }
+# * Interface (1 personne)
 # 
 # A décider avant de commencer :
 #  - Permettre une taille réglable de la grille (pas trop dur à prioris, et puis ca apprend à pas HARDCODER
 #  - Gérer plusieurs modes de jeu (plutot dur et une des variantes est plus adapté au jeu sur un seul ordi)
+#     --> De toutes facons il faut fixer une variante ou non
 #
 # On pourrait essayer de gérer les parties en réseau en définitive
 
@@ -15,7 +15,7 @@
 #  - Savoir le joueur en cours, la phase de jeu
 #  - Connaitre la disposition du terrain + savoir les cases où un joueur peut aller (surement des fonctions communes avec la partie qui suit)
 #  - Positions des joueurs
-#  - Objectif recherché
+#  - Objectif recherché 
 #
 # Dynamiques de jeu
 #  - Répartition des éléments du jeu
@@ -42,8 +42,14 @@
 # Et puis c'est aussi celui qui gère ca qui doit activer les fonctions déclanchant les différentes phases de jeu
 
 
+## Le jeu (#TamerMathieu)
+# Après une rapide analyse de l'original non piraté on a :
+# 15 cases lignes, 6 cases a trois entrées toutes occupées par un objectif et 13 cases en coin dont 6 occupées par un objectif
+# Les cases fixes sont toutes occupées par un objectif et sont toutes des cases à trois entrées
+# Les coins sont des coins .... coincoincoin
+
 ## Structures de données
-# Pour le stockage du terrain autant faire un truc du type leekwars avec un tableau de 49 et une structure du genre :
+# Pour le stockage du terrain autant faire un truc du type leekwars avec un tableau de 49 et une structure du genre
 # case[ ligne*7 + colone ] = [
 #   CASE_OUVERTURES = [ haut, gauche, bas, droite ], # Des booléens, et le sens trigo ca fait scientifique et tout
 #   CASE_OBJECTIFS = objectif, # Un int qui correspond à l'ID de l'objectif (un ID reservé pour pas d'objectif)
