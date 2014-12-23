@@ -49,3 +49,47 @@ def tournerCarte() :
 def taille() :
     '''Retourne la largeur/hauteur du jeu'''
     return int(sqrt(len(carte)))
+    
+
+## Debugage de la map en console
+    
+    
+def debugerCarte() :
+    '''Affiche la carte en ascii dans la console
+    Retours : juste un affichage console'''
+    
+    def formeAscii(case) :
+        '''Donne la forme en ascii d'une case
+        Entrée : la case dont on veut la forme
+        Sortie : trois chaines de 3 caractères, correspondantes à 3 lignes'''
+        
+        if case == [] :
+            return [ "   ", "   ", "   " ]
+        
+        croix = '+'
+        ligne = '─'
+        colone = 'ǀ'
+        
+        sortie = 3*[[]]
+        for i in range(3) :
+            sortie[i] = 3*[" "]
+        
+        sortie[0][1] = colone if case[CASE_OUVERTURES][0] else " "
+        sortie[1][0] = ligne  if case[CASE_OUVERTURES][1] else " "
+        sortie[2][1] = colone  if case[CASE_OUVERTURES][2] else " "
+        sortie[1][2] = ligne if case[CASE_OUVERTURES][3] else " "
+        
+        sortie[1][1] = croix
+        
+        #todo: afficher tous les joueurs
+        sortie[0][0] = str(case[CASE_JOUEURS][0]) if len(case[CASE_JOUEURS]) >= 1 else " "
+        
+        return [ "".join(sortie[0]), "".join(sortie[1]), "".join(sortie[2]) ]
+        
+        
+    for ligne in range(taille()) :
+        arrayLigne = 3*[""]
+        for colone in range(taille()) :
+            for i in range(3) :
+                arrayLigne[i] += " " + formeAscii(carte[case(colone, ligne)])[i]
+        print('\n'.join(arrayLigne))
