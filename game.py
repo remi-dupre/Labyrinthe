@@ -9,6 +9,35 @@ JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
 
+def insererPiece(case) :
+    '''Insere une pièce à la place de la case donnée en argument
+    Entrée :
+        - case : le numéro de case où insérer
+    Sortie :
+        - carte est modifié
+        - caseDispo est remplacé par une nouvelle case'''
+
+    global carte, caseDispo
+        
+    x,y = coordonneesCase(case)
+    for i in range(4): #todo: ptet que sans deepcopy ca bug
+        tournerCarte()
+        tournerCase(caseDispo)
+        x,y = y , taille()-x-1 # La ligne qui m'a fait le plus réflechir : réflechir en terme de vecteurs
+        if(x == 0) : # La case à inserer est à gauche
+            lignesPrecedentes = carte[0:y*taille()]
+            ligne = carte[y*taille() : (y+1)*taille() ] # La ligne qui nous interesse
+            lignesFin = carte[(y+1)*taille():]
+            
+            ligne = [caseDispo[:]] + ligne[:]
+            caseDispo[:] = ligne[-1]
+            caseDispo[CASE_JOUEURS] = []
+            ligne[0][CASE_JOUEURS] += ligne[-1][CASE_JOUEURS] # Fait traverser la carte aux joueurs sortis
+            del ligne[-1]
+            
+            carte[:] = lignesPrecedentes + ligne + lignesFin
+        
+
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
     Entrées :
@@ -16,6 +45,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         - nbObjectifs : nombre d'objectifs à placer sur la map
         - gamemode : le mode de jeu'''
     
+    global caseDispo
     nbJoueurs = len(joueurs)
     
     carte[:] = [ [] ] * (taille**2)
@@ -29,7 +59,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         
         infosCase = [0]*3
         infosCase[CASE_OUVERTURES] = [bool(vertical), bool(horizontal), not(vertical), not(horizontal)]
-        infosCase[CASE_OBJECTIF] = -1
+        infosCase[CASE_OBJECTIFS] = -1
         
         if joueur < nbJoueurs : # Si tous les joueurs ne sont pas placés, on en place un
             joueurs[joueur][JOUEUR_SCORE] = 0
@@ -59,14 +89,14 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
-    caseDispo = listePieces[0]
+    caseDispo = [ listePieces[0], -1, [] ]
     
     # Placement des objectifs
     casesLibres = list(range(taille**2))
     for objectif in range(nbObjectifs) :
         i = randint(0, len(casesLibres)-1)
         caseObj = casesLibres[i]
-        carte[caseObj][CASE_OBJECTIF] = objectif
+        carte[caseObj][CASE_OBJECTIFS] = objectif
         casesLibres.remove(caseObj)
 
 

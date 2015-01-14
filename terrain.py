@@ -4,20 +4,30 @@
 from numpy import sqrt
 
 
-carte = [] # Infos sur les cases du jeu
-CASE_OUVERTURES , CASE_OBJECTIF , CASE_JOUEURS =  0,1,2
+carte = []# Infos sur les cases du jeu
 
-# Liste contenant les informations des taille**2 cases
-# carte[l*taille + c] : case à la ligne l et colone c
-#  - carte[case][CASE_OUVERTURES] dans le sens trigo, en partant du haut, une liste de booléen, True correspond à une ouverture
-#  - carte[case][CASE_OBJECTIF] : l'ID de l'objectif sur la case, -1 s'il n'y en a pas
-#  - carte[case][CASE_JOUEURS] : liste des joueurs sur la case
+CASE_OUVERTURES = 0
+CASE_OBJECTIFS = 1
+CASE_JOUEURS = 2
 
 
 def case(x, y) :
     '''Retourne le numéro de la case correspondant aux coordonnées (x,y)
     x et y sont compris entre 0 et "Largeur map"-1'''
     return x + y*taille()
+
+
+def coordonneesCase(case) :
+    '''Retourne les coordonnées d'une case
+    Entrée :
+        - case : le numéro de case
+    Sortie :
+        - x
+        - y '''
+    
+    x = case % taille()
+    y = case // taille()
+    return x,y
 
 
 def tournerCase(case, nombre=1) :
@@ -31,6 +41,23 @@ def tournerCase(case, nombre=1) :
         
     case[CASE_OUVERTURES] = case[CASE_OUVERTURES][-nombre:] + case[CASE_OUVERTURES][:-nombre]
     return case
+
+
+def casesAdjacentes(case) :
+    '''Retourne les cases adjacentes d'une case
+    Entrée :
+        - case : la case centrale
+    Sortie :
+        - listeCases : les cases adjacentes '''
+        
+    listeCases = []
+    x,y = coordonneesCase(case)
+    for dif in [-1, 1, taille(), -taille()] :
+        caseProche = case + dif
+        xp,yp = coordonneesCase(caseProche)
+        if abs(xp-x) + abs(yp-y) == 1 and caseProche >= 0 : # Une sorte de xor
+            listeCases += [caseProche]
+    return listeCases
 
 
 def tournerCarte() :
