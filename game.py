@@ -3,17 +3,21 @@
 from terrain import *
 from random import randint
 
-joueurs = [] # Infos sur les joueurs
-caseDispo = [] # La carte hors du terrain
+joueurs = [] # Infos sur les joueurs [ [ NOM , SCORE, OBJECTIFS ] ]
+JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
-def commencer(nbJoueurs=4, taille=7) :
+caseDispo = [] # La carte hors jeu
+
+def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
     Entrées :
-        - nbJoueurs : nombre de joueurs (compris entre 2 et 4)
-        - taille : largeur/hauteur de la map (doit être impair)'''
+        - taille : largeur/hauteur de la map (doit être impair)
+        - nbObjectifs : nombre d'objectifs à placer sur la map
+        - gamemode : le mode de jeu'''
+    
+    nbJoueurs = len(joueurs)
     
     carte[:] = [ [] ] * (taille**2)
-    joueurs[:] = [0] * nbJoueurs
     
     # Placement des coins et des joueurs
     for joueur in range(4) :
@@ -24,8 +28,10 @@ def commencer(nbJoueurs=4, taille=7) :
         
         infosCase = [0]*3
         infosCase[CASE_OUVERTURES] = [bool(vertical), bool(horizontal), not(vertical), not(horizontal)]
-        infosCase[CASE_OBJECTIFS] = False
+        infosCase[CASE_OBJECTIF] = -1
+        
         if joueur < nbJoueurs : # Si tous les joueurs ne sont pas placés, on en place un
+            joueurs[joueur][JOUEUR_SCORE] = 0
             infosCase[CASE_JOUEURS] = [joueur]
         else :
             infosCase[CASE_JOUEURS] = []
@@ -39,7 +45,7 @@ def commencer(nbJoueurs=4, taille=7) :
             xMax = taille - 2*hauteur*(not hauteur >= hauteurMax)
             for x in range(0, xMax+1, 2) :
                 if( carte[case(x, hauteur)] == [] ) :
-                    carte[case(x, hauteur)] = [ [False, True, True, True], False, [] ]
+                    carte[case(x, hauteur)] = [ [False, True, True, True], -1, [] ]
             tournerCarte()
             
     # Répartition des autres cases
@@ -48,11 +54,19 @@ def commencer(nbJoueurs=4, taille=7) :
     for pos in range(taille**2) :
         if carte[pos] == [] :
             i = randint(0, len(listePieces))-1
-            piece = [ listePieces[i], False, [] ]
+            piece = [ listePieces[i], -1, [] ]
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
     caseDispo = listePieces[0]
+    
+    # Placement des objectifs
+    casesLibres = list(range(taille**2))
+    for objectif in range(nbObjectifs) :
+        i = randint(0, len(casesLibres)-1)
+        caseObj = casesLibres[i]
+        carte[caseObj][CASE_OBJECTIF] = objectif
+        casesLibres.remove(caseObj)
 
 
 def compterPieces() :

@@ -3,11 +3,14 @@
 from numpy import sqrt
 
 
-carte = []# Infos sur les cases du jeu
+carte = [] # Infos sur les cases du jeu
+CASE_OUVERTURES , CASE_OBJECTIF , CASE_JOUEURS =  0,1,2
 
-CASE_OUVERTURES = 0
-CASE_OBJECTIFS = 1
-CASE_JOUEURS = 2
+# Liste contenant les informations des taille**2 cases
+# carte[l*taille + c] : case à la ligne l et colone c
+#  - carte[case][CASE_OUVERTURES] dans le sens trigo, en partant du haut, une liste de booléen, True correspond à une ouverture
+#  - carte[case][CASE_OBJECTIF] : l'ID de l'objectif sur la case, -1 s'il n'y en a pas
+#  - carte[case][CASE_JOUEURS] : liste des joueurs sur la case
 
 
 def case(x, y) :
