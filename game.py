@@ -1,3 +1,4 @@
+# coding=utf-8
 """Les fonctions de gestion du jeu"""
 
 from terrain import *
