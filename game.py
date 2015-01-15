@@ -4,7 +4,13 @@
 from terrain import *
 from random import randint
 
-joueurs = [] # Infos sur les joueurs [ [ NOM , SCORE, OBJECTIFS ] ]
+
+#Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
+NOMBRE_JOUEURS=4
+NOMBRE_OBJECTIFS_JOUEUR=3
+NOMBRE_TOTAL_OBJECTIFS=24
+
+joueurs = [] # Infos sur les joueurs [ [ NOM , score, objectifs ] ]
 JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
@@ -36,7 +42,7 @@ def insererPiece(case) :
             del ligne[-1]
             
             carte[:] = lignesPrecedentes + ligne + lignesFin
-        
+            
 
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
@@ -46,6 +52,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         - gamemode : le mode de jeu'''
     
     global caseDispo
+    NOMBRE_TOTAL_OBJECTIFS = nbObjectifs
     nbJoueurs = len(joueurs)
     
     carte[:] = [ [] ] * (taille**2)
@@ -59,7 +66,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         
         infosCase = [0]*3
         infosCase[CASE_OUVERTURES] = [bool(vertical), bool(horizontal), not(vertical), not(horizontal)]
-        infosCase[CASE_OBJECTIFS] = -1
+        infosCase[CASE_OBJECTIF] = -1
         
         if joueur < nbJoueurs : # Si tous les joueurs ne sont pas placés, on en place un
             joueurs[joueur][JOUEUR_SCORE] = 0
@@ -89,15 +96,23 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
-    caseDispo = [ listePieces[0], -1, [] ]
+    caseDispo[:] = [ listePieces[0], -1, [] ]
     
     # Placement des objectifs
     casesLibres = list(range(taille**2))
     for objectif in range(nbObjectifs) :
         i = randint(0, len(casesLibres)-1)
         caseObj = casesLibres[i]
-        carte[caseObj][CASE_OBJECTIFS] = objectif
+        carte[caseObj][CASE_OBJECTIF] = objectif
         casesLibres.remove(caseObj)
+        
+    # Répartis les objectifs des joueurs
+    TirageObjectifs=list(range(nbObjectifs))
+    for i in range(NOMBRE_OBJECTIFS_JOUEUR):
+        for k in range(len(joueurs)):
+            al=randint(0,len(TirageObjectifs)-1)
+            joueurs[k][JOUEUR_OBJECTIFS]+=[TirageObjectifs[al]]
+            del(TirageObjectifs[al])
 
 
 def compterPieces() :
@@ -114,4 +129,61 @@ def compterPieces() :
     triples = nbPieces -lignes -coins
     
     return [lignes, coins, triples]
+
+
+def recupObjectif(joueur):
+    '''Vérifie si un objectif cherché par le joueur est sur la case où il se trouve
+    Dans le cas où il s'y trouve:
+        - enlève l'objectif de la liste du joueur
+        - incrémente le score du joueur'''
+    Joueur = joueurs[joueur]
+    case = carte[positionJoueur(joueur)]
+    listeObj = Joueur[JOUEUR_OBJECTIFS][:] #On crée une copie pour la boucle for
+    for i in range(len(listeObj)):
+        objectif = listeObj[i]
+        if objectif == case[CASE_OBJECTIF]:
+            print("Objectif récupéré!!")
+            del(Joueur[JOUEUR_OBJECTIFS][i])
+            Joueur[JOUEUR_SCORE]+=1
+
+
+def casesAccessibles(case):
+    '''Renvoie la liste des cases accessibles depuis une case donnée'''
+    #On crée une liste pleine de zéros puis on del les 0 à la toute fin
+    Case=carte[case]
+    Cases=[None]*len(carte)
+    Cases[case]=case
+    ProvisoireRef=[None]*len(carte)
+    ProvisoireRef[case]=case
+    fin=False
+    while fin==False:
+        Provisoire=ProvisoireRef[:]
+        for i in Cases:
+            if i!=None:
+                for k in casesAdjacentes(i):
+                    Provisoire[k]=k
+        if Provisoire==Cases:
+            fin=True
+        else:
+            for i in Provisoire:
+                if i!=None:
+                    Cases[i]=i
+    for i in range(Cases.count(None)): Cases.remove(None)
+    return(Cases)
     
+
+def bougerJoueur(joueur, case):
+    #todo: après, peut être, juste déplacer le joueur dont c'est le tour
+    #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
+    '''Déplace le joueur vers une autre case si ce déplacement est permis
+    Pour l'instant, en affichage console, on debug la carte
+    On vérifie également s'il y a un objectif récupérable'''
+    erreur=True
+    for i in casesAccessibles(positionJoueur(joueur)):
+        if i==case:
+            erreur=False
+    if erreur==True: return('Mouvement impossible')
+    carte[positionJoueur(joueur)][CASE_JOUEURS].remove(joueur)
+    carte[case][CASE_JOUEURS]+=[joueur]
+    debugerCarte()
+    recupObjectif(joueur)
