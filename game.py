@@ -3,6 +3,7 @@
 from terrain import *
 from random import randint
 
+<<<<<<< HEAD
 #Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
 NOMBRE_JOUEURS=4
 NOMBRE_OBJECTIFS_JOUEUR=3
@@ -13,7 +14,7 @@ JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
 
-def commencer(taille=7, nbObjectifs=30, gamemode=0) :
+def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
     Entrées :
         - taille : largeur/hauteur de la map (doit être impair)

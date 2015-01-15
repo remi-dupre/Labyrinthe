@@ -18,5 +18,9 @@ for i in range(NOMBRE_OBJECTIFS_JOUEUR):
         del(TirageObjectifs[al])
         
         
+joueurs += [ ["Daniel", 0, []] ]
+joueurs += [ ["Kouby", 0, []] ]
+joueurs += [ ["Whoping", 0, []] ]
 
+commencer(7, 25)
 debugerCarte()
