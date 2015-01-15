@@ -1,4 +1,3 @@
-# coding=utf-8
 """Opérations sur le terrain"""
 
 from numpy import sqrt
@@ -7,7 +6,7 @@ from numpy import sqrt
 carte = []# Infos sur les cases du jeu
 
 CASE_OUVERTURES = 0
-CASE_OBJECTIFS = 1
+CASE_OBJECTIF = 1
 CASE_JOUEURS = 2
 
 
@@ -15,6 +14,19 @@ def case(x, y) :
     '''Retourne le numéro de la case correspondant aux coordonnées (x,y)
     x et y sont compris entre 0 et "Largeur map"-1'''
     return x + y*taille()
+
+
+def coordonneesCase(case) :
+    '''Retourne les coordonnées d'une case
+    Entrée :
+        - case : le numéro de case
+    Sortie :
+        - x
+        - y '''
+    
+    x = case % taille()
+    y = case // taille()
+    return x,y
 
 
 def tournerCase(case, nombre=1) :
@@ -28,8 +40,8 @@ def tournerCase(case, nombre=1) :
         
     case[CASE_OUVERTURES] = case[CASE_OUVERTURES][-nombre:] + case[CASE_OUVERTURES][:-nombre]
     return case
-
-
+    
+    
 def tournerCarte() :
     '''Effectue une rotation de la carte dans le sens trigonométrique
     Retour : 
@@ -45,6 +57,26 @@ def tournerCarte() :
         
     carte[:] = nouvelleCarte
     return carte
+    
+
+
+def casesAdjacentes(case) :
+    '''Retourne les cases adjacentes d'une case où il est possible de se rendre 
+    Entrée :
+        - case : la case centrale
+    Sortie :
+        - listeCases : les cases adjacentes accessibles'''
+        
+    listeCases = []
+    x,y = coordonneesCase(case)
+    for dif in [[-1,1,3], [1,3,1], [taille(),2,0], [-taille(),0,2]] :
+        caseProche = case + dif[0]
+        xp,yp = coordonneesCase(caseProche)
+        if abs(xp-x) + abs(yp-y) == 1 and caseProche >= 0 and caseProche<taille()**2: # Une sorte de xor
+            if carte[caseProche][CASE_OUVERTURES][dif[2]] and carte[case][CASE_OUVERTURES][dif[1]]:
+                listeCases += [caseProche]
+    return listeCases
+
     
     
 def taille() :
@@ -94,3 +126,37 @@ def debugerCarte() :
             for i in range(3) :
                 arrayLigne[i] += " " + formeAscii(carte[case(colone, ligne)])[i]
         print('\n'.join(arrayLigne))
+
+
+def positionJoueur(joueur):
+    '''Renvoie la case associée à un joueur donné (en donnant le numéro du joueur)'''
+    for i in range(len(carte)):
+        case=carte[i]
+        for k in case[CASE_JOUEURS]:
+            if joueur==k:
+                return i
+    return None
+    
+
+##Jules
+
+from tkinter import *
+
+Terrain=Tk()
+
+zone_dessin = Canvas(Terrain, bg='dark grey', width=660, height=660)
+zone_dessin.pack()
+zone_dessin.create_rectangle(50,50,610,610)
+for k in range(1,7):                                                       #En gros ici on crée le quadrillage
+    zone_dessin.create_line(50+80*k,50,50+80*k,610)
+    zone_dessin.create_line(50,50+80*k,610,50+80*k)
+bou1=Button(Terrain,text='Quitter',width=10,command=Terrain.destroy)          #J'ai juste crée un boutton Quitter parce que j'ai pas trop d'autre idées
+bou1.pack(side=BOTTOM)
+text=Label(Terrain, text= "Tour 2 : Joueur 1",width=50, fg='Black')
+text.pack()                                                                #Exemple de texte pour le tour/tout ça par contre j'ai beau chercher je trouve pas commencer aggrandir la police ><
+
+Terrain.mainloop()
+
+def InterfaceGlobale (tour,javant,nbjoueurs):
+    text=Label(Terrain, text="Tour tour : Joueur (1+javant)%nbjoueurs",fg="black") 
+    text.pack()
