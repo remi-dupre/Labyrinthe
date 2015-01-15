@@ -1,9 +1,10 @@
+# coding=utf-8
 """Les fonctions de gestion du jeu"""
 
 from terrain import *
 from random import randint
 
-<<<<<<< HEAD
+
 #Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
 NOMBRE_JOUEURS=4
 NOMBRE_OBJECTIFS_JOUEUR=3
@@ -13,6 +14,7 @@ joueurs = [] # Infos sur les joueurs [ [ NOM , score, objectifs ] ]
 JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
+
 
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
@@ -74,6 +76,14 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         caseObj = casesLibres[i]
         carte[caseObj][CASE_OBJECTIF] = objectif
         casesLibres.remove(caseObj)
+        
+    # Répartis les objectifs des joueurs
+    TirageObjectifs=list(range(nbObjectifs))
+    for i in range(NOMBRE_OBJECTIFS_JOUEUR):
+        for k in range(len(joueurs)):
+            al=randint(0,len(TirageObjectifs)-1)
+            joueurs[k][JOUEUR_OBJECTIFS]+=[TirageObjectifs[al]]
+            del(TirageObjectifs[al])
 
 
 def compterPieces() :
@@ -108,7 +118,6 @@ def recupObjectif(joueur):
             Joueur[JOUEUR_SCORE]+=1
 
 
-
 def casesAccessibles(case):
     '''Renvoie la liste des cases accessibles depuis une case donnée'''
     #On crée une liste pleine de zéros puis on del les 0 à la toute fin
@@ -134,9 +143,9 @@ def casesAccessibles(case):
     return(Cases)
     
 
-    
-    
 def bougerJoueur(joueur, case):
+    #todo: après, peut être, juste déplacer le joueur dont c'est le tour
+    #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
     '''Déplace le joueur vers une autre case si ce déplacement est permis
     Pour l'instant, en affichage console, on debug la carte
     On vérifie également s'il y a un objectif récupérable'''

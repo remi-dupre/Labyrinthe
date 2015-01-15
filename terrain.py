@@ -1,3 +1,4 @@
+# coding=utf-8
 """Opérations sur le terrain"""
 
 from numpy import sqrt
@@ -62,7 +63,6 @@ def tournerCarte() :
     return carte
     
 
-
 def casesAdjacentes(case) :
     '''Retourne les cases adjacentes d'une case où il est possible de se rendre 
     Entrée :
@@ -80,7 +80,6 @@ def casesAdjacentes(case) :
                 listeCases += [caseProche]
     return listeCases
 
-    
     
 def taille() :
     '''Retourne la largeur/hauteur du jeu'''
@@ -143,7 +142,7 @@ def positionJoueur(joueur):
 
 ##Jules
 
-from tkinter import *
+'''from tkinter import *
 
 Terrain=Tk()
 
@@ -163,3 +162,4 @@ Terrain.mainloop()
 def InterfaceGlobale (tour,javant,nbjoueurs):
     text=Label(Terrain, text="Tour tour : Joueur (1+javant)%nbjoueurs",fg="black") 
     text.pack()
+'''
