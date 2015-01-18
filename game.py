@@ -98,7 +98,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
-    caseDispo = listePieces[0]
+    caseDispo[:] = [ listePieces[0], -1, [] ]
     
     # Placement des objectifs
     casesLibres = list(range(taille**2))
