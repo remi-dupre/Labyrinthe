@@ -10,4 +10,7 @@ for i in settingsNoms():
 
 commencer(7, 25)
 debugerCarte()
+
+
+from interface import *
 lancerInterface()

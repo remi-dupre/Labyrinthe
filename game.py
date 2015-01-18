@@ -44,6 +44,7 @@ def insererPiece(case) :
             del ligne[-1]
             
             carte[:] = lignesPrecedentes + ligne + lignesFin
+    etapeSuivante()
             
 
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
@@ -98,7 +99,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
-    caseDispo = listePieces[0]
+    caseDispo[:] = [ listePieces[0], -1, [] ]
     
     # Placement des objectifs
     casesLibres = list(range(taille**2))
@@ -136,7 +137,7 @@ def recupObjectif(joueur):
     for i in range(len(listeObj)):
         objectif = listeObj[i]
         if objectif == case[CASE_OBJECTIF]:
-            print("Objectif récupéré!!")
+            message("Important","Objectif récupéré!!")
             del(Joueur[JOUEUR_OBJECTIFS][i])
             Joueur[JOUEUR_SCORE]+=1
 
@@ -179,12 +180,15 @@ def bougerJoueur(case):
     for i in casesAccessibles(positionJoueur(joueur)):
         if i==case:
             erreur=False
-    if erreur==True: return('Mouvement impossible')
+    if erreur==True:
+        message("Erreur",'Mouvement impossible')
+        return
     carte[positionJoueur(joueur)][CASE_JOUEURS].remove(joueur)
     carte[case][CASE_JOUEURS]+=[joueur]
     recupObjectif(joueur)
     debugerCarte()
     gagne(joueur)
+    etapeSuivante()
     
 
 def gagne(joueur):
@@ -194,5 +198,16 @@ def gagne(joueur):
         if nom=="DreadBonney": return "Kneel, inferior creatures"
         if nom=="Chapodfail": return "Ah bah j'm'attendais pas à gagner!!"
         if nom=="Whopping": return "Comme quoi c'est bien de greed parfois..."
-        return joueurs[joueur][JOUEUR_NOM]+" a gagné!!"
-    
+        
+        message("Félicitations", str(joueurs[joueur][JOUEUR_NOM]+" a gagné!!"))
+
+
+def etapeSuivante():
+    etatJeu[JEU_ETAPE]+=1
+    if etatJeu[JEU_ETAPE]==2:
+        etatJeu[JEU_ETAPE]=0
+        etatJeu[JEU_JOUEUR]+=1
+    if etatJeu[JEU_JOUEUR]==len(joueurs):
+        etatJeu[JEU_JOUEUR]=0
+        etatJeu[JEU_TOUR]+=1
+    print(etatJeu)

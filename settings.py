@@ -1,5 +1,22 @@
 from tkinter import *
 
+def message(titre,texte):
+    """Affiche une fenetre pop up avec comme titre titre et texte texte
+    S'efface au bout d'un court instant
+    Fermable en appuyant sur Ok"""
+    f_pop=Toplevel()
+    f_pop.title(titre)
+    f_pop.geometry("250x120+500+300")
+       
+    l_Message=Label(f_pop, text='\n'+'\n'+texte+'\n', font="Verdana 10 bold")
+    l_Message.pack()
+        
+    b_Stop=Button(f_pop, text="Ok", command=f_pop.destroy)
+    b_Stop.pack()
+    b_Stop.after(4000, f_pop.destroy)
+        
+    f_pop.mainloop()
+
 def settingsNoms():
     """Fonction renvoyant une liste de noms rentrée par l'utilisateur.
         - Il doit forcément y avoir un premier nom
@@ -17,7 +34,7 @@ def settingsNoms():
     def valider(*event):
         if saisie()!="":
             if dans(liste,saisie()):
-                message("Nom déjà utilisé")
+                message("Erreur","Nom déjà utilisé")
                 return
             liste[i[0]-1]=saisie()
             i[0]+=1
@@ -26,33 +43,19 @@ def settingsNoms():
             else:
                 l_Nom['text']="\tNom joueur {}".format(i[0])
         else:
-            message("Anneau nul: erreur")
+            message("Erreur","Anneau nul: erreur")
             
     def lancer(*event):
         if liste[0]!=0:
             Fenetre.destroy()
         else:
-            message('Il faut au moins un joueur')
+            message("Erreur",'Il faut au moins un joueur')
 
     def dans(L,e):
         for i in L:
             if i==e: return True
         return False
     
-    def message(texte):
-        f_pop=Toplevel()
-        f_pop.title('Erreur')
-        f_pop.geometry("250x120+500+300")
-        
-        l_Message=Label(f_pop, text='\n'+'\n'+texte+'\n', font="Verdana 10 bold")
-        l_Message.pack()
-        
-        b_Stop=Button(f_pop, text="Ok", command=f_pop.destroy)
-        b_Stop.pack()
-        b_Stop.after(4000, f_pop.destroy)
-        
-        f_pop.mainloop()
-        
     def saisie():
         n=nom.get()
         if n=="D": return 'DreadBonney'
