@@ -38,7 +38,7 @@ def tournerCase(case, nombre=1) :
     Sortie :
         - La case donnée en entrée est modifiée
         - Retourne la case modifiée '''
-        
+    
     case[CASE_OUVERTURES] = case[CASE_OUVERTURES][-nombre:] + case[CASE_OUVERTURES][:-nombre]
     return case
     
@@ -135,27 +135,3 @@ def positionJoueur(joueur):
             if joueur==k:
                 return i
     return None
-    
-
-##Jules
-
-from tkinter import *
-
-Terrain=Tk()
-
-zone_dessin = Canvas(Terrain, bg='dark grey', width=660, height=660)
-zone_dessin.pack()
-zone_dessin.create_rectangle(50,50,610,610)
-for k in range(1,7):                                                       #En gros ici on crée le quadrillage
-    zone_dessin.create_line(50+80*k,50,50+80*k,610)
-    zone_dessin.create_line(50,50+80*k,610,50+80*k)
-bou1=Button(Terrain,text='Quitter',width=10,command=Terrain.destroy)          #J'ai juste crée un boutton Quitter parce que j'ai pas trop d'autre idées
-bou1.pack(side=BOTTOM)
-text=Label(Terrain, text= "Tour 2 : Joueur 1",width=50, fg='Black')
-text.pack()                                                                #Exemple de texte pour le tour/tout ça par contre j'ai beau chercher je trouve pas commencer aggrandir la police ><
-
-Terrain.mainloop()
-
-def InterfaceGlobale (tour,javant,nbjoueurs):
-    text=Label(Terrain, text="Tour tour : Joueur (1+javant)%nbjoueurs",fg="black") 
-    text.pack()

@@ -13,7 +13,40 @@ JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
 
-def commencer(taille=7, nbObjectifs=30, gamemode=0) :
+etatJeu = [ 0, 0, 0 ] # Tour, Joueur, Etape
+JEU_TOUR, JEU_JOUEUR, JEU_ETAPE = 0,1,2
+ETAPE_PIECE, ETAPE_BOUGER = 0,1
+
+def insererPiece(case) :
+    '''Insere une pièce à la place de la case donnée en argument
+    Entrée :
+        - case : le numéro de case où insérer
+    Sortie :
+        - carte est modifié
+        - caseDispo est remplacé par une nouvelle case'''
+
+    global carte, caseDispo
+        
+    x,y = coordonneesCase(case)
+    for i in range(4): #todo: ptet que sans deepcopy ca bug
+        tournerCarte()
+        tournerCase(caseDispo)
+        x,y = y , taille()-x-1 # La ligne qui m'a fait le plus réflechir : réflechir en terme de vecteurs
+        if(x == 0) : # La case à inserer est à gauche
+            lignesPrecedentes = carte[0:y*taille()]
+            ligne = carte[y*taille() : (y+1)*taille() ] # La ligne qui nous interesse
+            lignesFin = carte[(y+1)*taille():]
+            
+            ligne = [caseDispo[:]] + ligne[:]
+            caseDispo[:] = ligne[-1]
+            caseDispo[CASE_JOUEURS] = []
+            ligne[0][CASE_JOUEURS] += ligne[-1][CASE_JOUEURS] # Fait traverser la carte aux joueurs sortis
+            del ligne[-1]
+            
+            carte[:] = lignesPrecedentes + ligne + lignesFin
+            
+
+def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
     Entrées :
         - taille : largeur/hauteur de la map (doit être impair)
@@ -22,6 +55,7 @@ def commencer(taille=7, nbObjectifs=30, gamemode=0) :
     
     NOMBRE_TOTAL_OBJECTIFS = nbObjectifs
     nbJoueurs = len(joueurs)
+    etatJeu = [ 0, 0, 0 ]
     
     carte[:] = [ [] ] * (taille**2)
     
@@ -133,13 +167,14 @@ def casesAccessibles(case):
     return(Cases)
     
 
-    
-    
-def bougerJoueur(joueur, case):
+def bougerJoueur(case):
+    #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
     '''Déplace le joueur vers une autre case si ce déplacement est permis
     Pour l'instant, en affichage console, on debug la carte
-    On vérifie également s'il y a un objectif récupérable
-    Si le joueur a gagné, il a gagné'''
+    On vérifie également s'il y a un objectif récupérable'''
+    
+    joueur = etatJeu[JEU_JOUEUR]
+    
     erreur=True
     for i in casesAccessibles(positionJoueur(joueur)):
         if i==case:
