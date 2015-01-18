@@ -5,8 +5,10 @@ from tkinter import *
 from PIL import Image, ImageTk, ImageDraw, ImageFilter
 import os.path
 
+
+TEXTURE=str(settingsTextures())
+
 CANVAS_SIZE = 500 # taille de la fenetre
-TEXTURE = "1"
 
 PATERN = [ [False, False, True, True],   # Les patern de case correspondant aux images enregistrées
            [True, False, True, True],
