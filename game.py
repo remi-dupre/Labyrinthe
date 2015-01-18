@@ -1,6 +1,7 @@
 """Les fonctions de gestion du jeu"""
 
 from terrain import *
+from settings import message
 from random import randint
 
 #Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
@@ -26,13 +27,15 @@ def insererPiece(case) :
         - caseDispo est remplacé par une nouvelle case'''
 
     global carte, caseDispo
-        
     x,y = coordonneesCase(case)
+    changement = False
+    
     for i in range(4): #todo: ptet que sans deepcopy ca bug
         tournerCarte()
         tournerCase(caseDispo)
         x,y = y , taille()-x-1 # La ligne qui m'a fait le plus réflechir : réflechir en terme de vecteurs
-        if(x == 0) : # La case à inserer est à gauche
+        if x == 0 and y%2 : # La case à inserer est à gauche
+            changement = True
             lignesPrecedentes = carte[0:y*taille()]
             ligne = carte[y*taille() : (y+1)*taille() ] # La ligne qui nous interesse
             lignesFin = carte[(y+1)*taille():]
@@ -44,7 +47,8 @@ def insererPiece(case) :
             del ligne[-1]
             
             carte[:] = lignesPrecedentes + ligne + lignesFin
-    etapeSuivante()
+    if changement :
+        etapeSuivante()
             
 
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
@@ -109,6 +113,14 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         carte[caseObj][CASE_OBJECTIF] = objectif
         casesLibres.remove(caseObj)
 
+    # Distribution des objectifs    
+    TirageObjectifs=list(range(NOMBRE_TOTAL_OBJECTIFS))
+    for i in range(NOMBRE_OBJECTIFS_JOUEUR):
+        for k in range(len(joueurs)):
+            al=randint(0,len(TirageObjectifs)-1)
+            joueurs[k][JOUEUR_OBJECTIFS]+=[TirageObjectifs[al]]
+            del(TirageObjectifs[al])
+
 
 def compterPieces() :
     '''Donne la liste des pièces non-fixes
@@ -137,7 +149,6 @@ def recupObjectif(joueur):
     for i in range(len(listeObj)):
         objectif = listeObj[i]
         if objectif == case[CASE_OBJECTIF]:
-            message("Important","Objectif récupéré!!")
             del(Joueur[JOUEUR_OBJECTIFS][i])
             Joueur[JOUEUR_SCORE]+=1
 
@@ -169,7 +180,6 @@ def casesAccessibles(case):
     
 
 def bougerJoueur(case):
-    #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
     '''Déplace le joueur vers une autre case si ce déplacement est permis
     Pour l'instant, en affichage console, on debug la carte
     On vérifie également s'il y a un objectif récupérable'''
@@ -183,10 +193,11 @@ def bougerJoueur(case):
     if erreur==True:
         message("Erreur",'Mouvement impossible')
         return
+        
     carte[positionJoueur(joueur)][CASE_JOUEURS].remove(joueur)
     carte[case][CASE_JOUEURS]+=[joueur]
     recupObjectif(joueur)
-    debugerCarte()
+    
     gagne(joueur)
     etapeSuivante()
     
@@ -195,9 +206,9 @@ def gagne(joueur):
     '''Retourne quelque chose si joueur a gagné'''
     nom=joueurs[joueur][JOUEUR_NOM]
     if joueurs[joueur][JOUEUR_OBJECTIFS]==[]:
-        if nom=="DreadBonney": return "Kneel, inferior creatures"
-        if nom=="Chapodfail": return "Ah bah j'm'attendais pas à gagner!!"
-        if nom=="Whopping": return "Comme quoi c'est bien de greed parfois..."
+        if nom=="DreadBonney": message("Félicitations", "Kneel, inferior creatures")
+        if nom=="Chapodfail": message("Félicitations", "Ah bah j'm'attendais pas à gagner!!")
+        if nom=="Whopping": message("Félicitations", "Comme quoi c'est bien de greed parfois... @LeGrandPotofeu")
         
         message("Félicitations", str(joueurs[joueur][JOUEUR_NOM]+" a gagné!!"))
 

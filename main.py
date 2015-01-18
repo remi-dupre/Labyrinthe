@@ -8,7 +8,7 @@ for i in settingsNoms():
         joueurs += [ [i, 0, []] ]
 
 
-commencer(7, 30)
+commencer(7, 25)
 debugerCarte()
 
 

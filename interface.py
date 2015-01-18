@@ -1,5 +1,5 @@
 from tkinter import *
-from PIL import Image, ImageTk, ImageDraw
+from PIL import Image, ImageTk, ImageDraw, ImageFilter
 import os.path
 
 from terrain import *
@@ -70,6 +70,12 @@ def imageCase(case, idCase=-1) :
         x = 1-x if y == 0 else x
         y = 1-y
     
+    # Le truc badass
+    if etatJeu[JEU_ETAPE] == ETAPE_BOUGER :
+        joueur = etatJeu[JEU_JOUEUR]
+        if not(idCase in casesAccessibles(positionJoueur(joueur))) :
+            image = image.filter(ImageFilter.BLUR)
+    
     return image
     
     
@@ -118,10 +124,13 @@ def caseClic(event, case) :
         bougerJoueur(case)
         
     refreshJeu()
+    print("dan")
     
 
 def refreshJeu() :
     """ """ #todo: specifs
+    
+    tailleObjectif = 50 # Seulement l'affichage en bas
     
     global saveImgs
     
@@ -145,6 +154,18 @@ def refreshJeu() :
     caseLibre.configure(image=img)
     caseLibre.image = img # Plus propre pour garder en memoire
     
+    # Affichage des objectifs du joueur courrant
+    listeObjectifs = joueurs[etatJeu[JEU_JOUEUR]][JOUEUR_OBJECTIFS]
+    imgTtObj = Image.new("RGBA", (tailleObjectif*len(listeObjectifs), tailleObjectif))
+    for i in range(len(listeObjectifs)) :
+        objectif = listeObjectifs[i]
+        imgObj = Image.open("img/objectif/" + str(objectif) + ".gif")
+        imgTtObj.paste(imgObj, (i*tailleObjectif, 0), imgObj.convert("RGBA") )
+    imgTtObj = ImageTk.PhotoImage(imgTtObj)
+    objectifsJoueur.configure(image=imgTtObj)
+    objectifsJoueur.image = imgTtObj
+        
+    # Etat du jeu
     textEtat = "Tour " + str(etatJeu[JEU_TOUR]) + " , " + str(joueurs[etatJeu[JEU_JOUEUR]][JOUEUR_NOM])
     labelEtat.configure(text = textEtat)
     fenJeu.title("Labyrinthe | " + textEtat)
@@ -161,6 +182,9 @@ fenJeu=Tk()
 
 affichageTerrain = Canvas(fenJeu, bg='dark grey', width=CANVAS_SIZE, height=CANVAS_SIZE)
 affichageTerrain.pack()
+
+objectifsJoueur = Label(fenJeu)
+objectifsJoueur.pack(side=LEFT)
 
 caseLibre = Label(fenJeu)
 caseLibre.pack(side=RIGHT)
