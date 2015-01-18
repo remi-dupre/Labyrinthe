@@ -8,9 +8,8 @@ for i in settingsNoms():
         joueurs += [ [i, 0, []] ]
 
 
-commencer(7, 24)
+commencer(7, 30)
 debugerCarte()
-carte[0][CASE_JOUEURS] += [1]
 
 from interface import *
 lancerInterface()

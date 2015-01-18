@@ -5,7 +5,7 @@ import os.path
 from terrain import *
 from game import *
 
-CANVAS_SIZE = 500 # taille de la fenetre
+CANVAS_SIZE = 600 # taille de la fenetre
 
 PATERN = [ [True, True, False, True],   # Les patern de case correspondant aux images enregistrées
            [False, True, False, True],
