@@ -15,6 +15,10 @@ JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
 
+etatJeu = [ 0, 0, 0 ] # Tour, Joueur, Etape
+JEU_TOUR, JEU_JOUEUR, JEU_ETAPE = 0,1,2
+ETAPE_PIECE, ETAPE_BOUGER = 0,1
+
 def insererPiece(case) :
     '''Insere une pièce à la place de la case donnée en argument
     Entrée :
@@ -23,7 +27,8 @@ def insererPiece(case) :
         - carte est modifié
         - caseDispo est remplacé par une nouvelle case'''
 
-    global carte, caseDispo
+    global carte, caseDispo, jeu
+    etatJeu = [ 0, 0, 0 ]
         
     x,y = coordonneesCase(case)
     for i in range(4): #todo: ptet que sans deepcopy ca bug
@@ -172,12 +177,13 @@ def casesAccessibles(case):
     return(Cases)
     
 
-def bougerJoueur(joueur, case):
-    #todo: après, peut être, juste déplacer le joueur dont c'est le tour
+def bougerJoueur(case):
     #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
     '''Déplace le joueur vers une autre case si ce déplacement est permis
     Pour l'instant, en affichage console, on debug la carte
     On vérifie également s'il y a un objectif récupérable'''
+    
+    joueur = etatJeu[JEU_JOUEUR]
     erreur=True
     for i in casesAccessibles(positionJoueur(joueur)):
         if i==case:
