@@ -1,9 +1,7 @@
-# coding=utf-8
 """Les fonctions de gestion du jeu"""
 
 from terrain import *
 from random import randint
-
 
 #Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
 NOMBRE_JOUEURS=4
@@ -15,43 +13,13 @@ JOUEUR_NOM, JOUEUR_SCORE, JOUEUR_OBJECTIFS = 0,1,2
 
 caseDispo = [] # La carte hors jeu
 
-def insererPiece(case) :
-    '''Insere une pièce à la place de la case donnée en argument
-    Entrée :
-        - case : le numéro de case où insérer
-    Sortie :
-        - carte est modifié
-        - caseDispo est remplacé par une nouvelle case'''
-
-    global carte, caseDispo
-        
-    x,y = coordonneesCase(case)
-    for i in range(4): #todo: ptet que sans deepcopy ca bug
-        tournerCarte()
-        tournerCase(caseDispo)
-        x,y = y , taille()-x-1 # La ligne qui m'a fait le plus réflechir : réflechir en terme de vecteurs
-        if(x == 0) : # La case à inserer est à gauche
-            lignesPrecedentes = carte[0:y*taille()]
-            ligne = carte[y*taille() : (y+1)*taille() ] # La ligne qui nous interesse
-            lignesFin = carte[(y+1)*taille():]
-            
-            ligne = [caseDispo[:]] + ligne[:]
-            caseDispo[:] = ligne[-1]
-            caseDispo[CASE_JOUEURS] = []
-            ligne[0][CASE_JOUEURS] += ligne[-1][CASE_JOUEURS] # Fait traverser la carte aux joueurs sortis
-            del ligne[-1]
-            
-            carte[:] = lignesPrecedentes + ligne + lignesFin
-            
-
-def commencer(taille=7, nbObjectifs=25, gamemode=0) :
+def commencer(taille=7, nbObjectifs=30, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
     Entrées :
         - taille : largeur/hauteur de la map (doit être impair)
         - nbObjectifs : nombre d'objectifs à placer sur la map
         - gamemode : le mode de jeu'''
     
-    global caseDispo
     NOMBRE_TOTAL_OBJECTIFS = nbObjectifs
     nbJoueurs = len(joueurs)
     
@@ -96,7 +64,7 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
             tournerCase(piece, randint(1,4))
             del listePieces[i]
             carte[pos] = piece
-    caseDispo[:] = [ listePieces[0], -1, [] ]
+    caseDispo = listePieces[0]
     
     # Placement des objectifs
     casesLibres = list(range(taille**2))
@@ -105,14 +73,6 @@ def commencer(taille=7, nbObjectifs=25, gamemode=0) :
         caseObj = casesLibres[i]
         carte[caseObj][CASE_OBJECTIF] = objectif
         casesLibres.remove(caseObj)
-        
-    # Répartis les objectifs des joueurs
-    TirageObjectifs=list(range(nbObjectifs))
-    for i in range(NOMBRE_OBJECTIFS_JOUEUR):
-        for k in range(len(joueurs)):
-            al=randint(0,len(TirageObjectifs)-1)
-            joueurs[k][JOUEUR_OBJECTIFS]+=[TirageObjectifs[al]]
-            del(TirageObjectifs[al])
 
 
 def compterPieces() :
@@ -147,6 +107,7 @@ def recupObjectif(joueur):
             Joueur[JOUEUR_SCORE]+=1
 
 
+
 def casesAccessibles(case):
     '''Renvoie la liste des cases accessibles depuis une case donnée'''
     #On crée une liste pleine de zéros puis on del les 0 à la toute fin
@@ -172,12 +133,13 @@ def casesAccessibles(case):
     return(Cases)
     
 
+    
+    
 def bougerJoueur(joueur, case):
-    #todo: après, peut être, juste déplacer le joueur dont c'est le tour
-    #todo: ne pas afficher la carte dans cette fonction (enfin a virer après que t'en ai fini avec quoi)
     '''Déplace le joueur vers une autre case si ce déplacement est permis
     Pour l'instant, en affichage console, on debug la carte
-    On vérifie également s'il y a un objectif récupérable'''
+    On vérifie également s'il y a un objectif récupérable
+    Si le joueur a gagné, il a gagné'''
     erreur=True
     for i in casesAccessibles(positionJoueur(joueur)):
         if i==case:
@@ -185,5 +147,17 @@ def bougerJoueur(joueur, case):
     if erreur==True: return('Mouvement impossible')
     carte[positionJoueur(joueur)][CASE_JOUEURS].remove(joueur)
     carte[case][CASE_JOUEURS]+=[joueur]
-    debugerCarte()
     recupObjectif(joueur)
+    debugerCarte()
+    gagne(joueur)
+    
+
+def gagne(joueur):
+    '''Retourne quelque chose si joueur a gagné'''
+    nom=joueurs[joueur][JOUEUR_NOM]
+    if joueurs[joueur][JOUEUR_OBJECTIFS]==[]:
+        if nom=="DreadBonney": return "Kneel, inferior creatures"
+        if nom=="Chapodfail": return "Ah bah j'm'attendais pas à gagner!!"
+        if nom=="Whopping": return "Comme quoi c'est bien de greed parfois..."
+        return joueurs[joueur][JOUEUR_NOM]+" a gagné!!"
+    

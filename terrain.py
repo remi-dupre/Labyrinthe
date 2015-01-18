@@ -139,7 +139,7 @@ def positionJoueur(joueur):
 
 ##Jules
 
-'''from tkinter import *
+from tkinter import *
 
 Terrain=Tk()
 
@@ -159,4 +159,3 @@ Terrain.mainloop()
 def InterfaceGlobale (tour,javant,nbjoueurs):
     text=Label(Terrain, text="Tour tour : Joueur (1+javant)%nbjoueurs",fg="black") 
     text.pack()
-'''
