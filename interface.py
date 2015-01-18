@@ -1,15 +1,16 @@
+from game import *
+from terrain import *
+
 from tkinter import *
 from PIL import Image, ImageTk, ImageDraw, ImageFilter
 import os.path
 
-from terrain import *
-from game import *
+CANVAS_SIZE = 500 # taille de la fenetre
+TEXTURE = "1"
 
-CANVAS_SIZE = 600 # taille de la fenetre
-
-PATERN = [ [True, True, False, True],   # Les patern de case correspondant aux images enregistrées
-           [False, True, False, True],
-           [True, False, False, True] ]
+PATERN = [ [False, False, True, True],   # Les patern de case correspondant aux images enregistrées
+           [True, False, True, True],
+           [True, False, True, False] ]
            
 JOUEUR_COULEURS = [
     (100, 160, 100),
@@ -35,15 +36,18 @@ def imageCase(case, idCase=-1) :
     Sortie :
         - L'image au format PIL"""
         
-    tailleCase = 150
+    tailleCase = 100
     tailleJoueur = 40
     tailleObjectif = 60
+    
+    joueur = etatJeu[JEU_JOUEUR]
         
     caseType = [ PATERN[typeCase(case)], -1, [] ]
-    image = Image.open("img/patern/" + str(typeCase(case)) + ".png").resize((tailleCase,tailleCase))
+    image = Image.open("img/patern/" + TEXTURE + "/" + str(typeCase(case)) + ".png")
+    image = image.resize((tailleCase,tailleCase))
     
     while caseType[CASE_OUVERTURES] != case[CASE_OUVERTURES] :
-        tournerCase(caseType) #todo: si ca bug ca peut etre là
+        tournerCase(caseType)
         image = image.rotate(90)
     
     # Ajout de l'objectif
@@ -54,7 +58,6 @@ def imageCase(case, idCase=-1) :
         image.paste(imgObj, (origine, origine), imgObj.convert("RGBA"))
     
     # Ajout des joueurs
-    #todo: un cercle coloré autour du joueur
     if len(case[CASE_JOUEURS]) == 1 :
         origine = ( tailleCase - tailleJoueur ) // 2
     else :
@@ -69,12 +72,25 @@ def imageCase(case, idCase=-1) :
         image.paste(imgJ, (x*tailleJoueur+origine, y*tailleJoueur+origine), imgJ.convert("RGBA"))
         x = 1-x if y == 0 else x
         y = 1-y
+        
+        if joueur == etatJeu[JEU_JOUEUR] :
+            imgJ = ImageTk.PhotoImage(imgJ)
+            joueurCourrant.configure(image=imgJ)
+            joueurCourrant.image = imgJ
     
     # Le truc badass
-    if etatJeu[JEU_ETAPE] == ETAPE_BOUGER :
-        joueur = etatJeu[JEU_JOUEUR]
-        if not(idCase in casesAccessibles(positionJoueur(joueur))) :
+    if etatJeu[JEU_ETAPE] == ETAPE_BOUGER and idCase != -1 :
+        if not(idCase in casesAccessibles(positionJoueur(joueur))) and idCase != -1 :
             image = image.filter(ImageFilter.BLUR)
+    elif etatJeu[JEU_ETAPE] == ETAPE_PIECE :
+        x,y = coordonneesCase(idCase)
+        if not(x%2) and not(y%2) :
+            image = image.point(lambda x : x*0.8)
+            image = image.filter(ImageFilter.MinFilter)
+            
+    if case[CASE_OBJECTIF] in joueurs[joueur][JOUEUR_OBJECTIFS] :
+        cible = Image.open("img/cible.png").resize((25,25))
+        image.paste(cible, (0,0), cible.convert("RGBA"))
     
     return image
     
@@ -124,11 +140,13 @@ def caseClic(event, case) :
         bougerJoueur(case)
         
     refreshJeu()
-    print("dan")
     
 
 def refreshJeu() :
-    """ """ #todo: specifs
+    """Rafraichis entièrement l'interface du jeu
+    Rechauffe aussi la pièce en créant volontairement des fonctions très lourdes dans le but
+        - de faire travailler le processeur
+        - d'inciter l'utilisateur a retourner au travail"""
     
     tailleObjectif = 50 # Seulement l'affichage en bas
     
@@ -143,7 +161,7 @@ def refreshJeu() :
             img = imageCase(carte[idCase], idCase)
             img = img.resize((tailleCase, tailleCase))
             img = ImageTk.PhotoImage(img) # Conversion pour tkinter
-            affichageTerrain.create_image((x*tailleCase+35, y*tailleCase+35), image=img, tag="-"+str(idCase))
+            affichageTerrain.create_image(((x+0.5)*tailleCase, (y+0.5)*tailleCase), image=img, tag="-"+str(idCase))
             affichageTerrain.tag_bind("-"+str(idCase), "<Button-1>", lambda event,case=idCase : caseClic(event, case)) # L'astuce du campeur
             saveImgs += [img] # Il faut garder l'image en mémoire, j'ai rien trouvé d'autre
         
@@ -153,6 +171,15 @@ def refreshJeu() :
     img = ImageTk.PhotoImage(img)
     caseLibre.configure(image=img)
     caseLibre.image = img # Plus propre pour garder en memoire
+    
+    for i in range(1,4) :
+        tournerCase(caseDispo)
+        imgCase = imageCase(caseDispo).resize((tailleCase//3, tailleCase//3))
+        imgCase = ImageTk.PhotoImage(imgCase)
+        choixRotation.create_image((tailleCase/6, (i-0.5)*tailleCase/3), image=imgCase, tag="--"+str(i))
+        choixRotation.tag_bind("--"+str(i), "<Button-1>", lambda event,rot=i : tournerCaseDispo(rot))
+        saveImgs += [imgCase]
+    tournerCase(caseDispo)
     
     # Affichage des objectifs du joueur courrant
     listeObjectifs = joueurs[etatJeu[JEU_JOUEUR]][JOUEUR_OBJECTIFS]
@@ -171,20 +198,25 @@ def refreshJeu() :
     fenJeu.title("Labyrinthe | " + textEtat)
 
 
-def tournerCaseDispo() :
+def tournerCaseDispo(nombre = 1) :
     """Fait roter la case hors-jeu, et rafraichis l'affichage"""
-    tournerCase(caseDispo)
+    tournerCase(caseDispo, nombre)
     refreshJeu()
-    print(caseDispo)
 
 
 fenJeu=Tk()
 
-affichageTerrain = Canvas(fenJeu, bg='dark grey', width=CANVAS_SIZE, height=CANVAS_SIZE)
+affichageTerrain = Canvas(fenJeu, bg='grey', width=CANVAS_SIZE, height=CANVAS_SIZE)
 affichageTerrain.pack()
 
 objectifsJoueur = Label(fenJeu)
 objectifsJoueur.pack(side=LEFT)
+
+joueurCourrant = Label(fenJeu)
+joueurCourrant.pack(side=RIGHT)
+
+choixRotation = Canvas(fenJeu, bg='grey', width=CANVAS_SIZE//(3*taille()), height=CANVAS_SIZE//taille())
+choixRotation.pack(side=RIGHT)
 
 caseLibre = Label(fenJeu)
 caseLibre.pack(side=RIGHT)

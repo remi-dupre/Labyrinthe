@@ -1,14 +1,10 @@
-from game import *
 from settings import *
-from random import randint
-
+from game import *
 
 for i in settingsNoms():
     if i!=0:
         joueurs += [ [i, 0, []] ]
-
-
-commencer(7, 25)
+choixMode()
 debugerCarte()
 
 

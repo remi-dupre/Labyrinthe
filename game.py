@@ -1,7 +1,7 @@
 """Les fonctions de gestion du jeu"""
 
 from terrain import *
-from settings import message
+from settings import *
 from random import randint
 
 #Coin des paramètres qui seront plus tard définis dans la fenêtre de paramétrage
@@ -49,7 +49,30 @@ def insererPiece(case) :
             carte[:] = lignesPrecedentes + ligne + lignesFin
     if changement :
         etapeSuivante()
-            
+         
+         
+def choixMode() :
+    """Lance une fenetre qui permet de selectionner differents types de parties"""
+    
+    def rapide():
+        commencer(5, 12)
+        Fen.destroy()
+    def normal():
+        commencer(7, 25)
+        Fen.destroy()
+    def long():
+        commencer(11, 25)
+        Fen.destroy()
+    
+    Fen = Tk()
+    btn_rapide = Button(Fen, text="Partie rapide", command=rapide)
+    btn_rapide.pack()
+    btn_normal = Button(Fen, text="Partie classique", command=normal)
+    btn_normal.pack()
+    btn_long = Button(Fen, text="Partie longue", command=long)
+    btn_long.pack()
+    Fen.mainloop()
+    
 
 def commencer(taille=7, nbObjectifs=25, gamemode=0) :
     '''Initialise ou réinitialise le jeu.
@@ -221,4 +244,3 @@ def etapeSuivante():
     if etatJeu[JEU_JOUEUR]==len(joueurs):
         etatJeu[JEU_JOUEUR]=0
         etatJeu[JEU_TOUR]+=1
-    print(etatJeu)

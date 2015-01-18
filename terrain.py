@@ -1,4 +1,3 @@
-# coding=utf-8
 """Opérations sur le terrain"""
 
 from numpy import sqrt

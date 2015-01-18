@@ -1,9 +1,36 @@
+"""Pour modifier certain parametres"""
+
 from tkinter import *
 
-def message(titre,texte):
+
+def choixMode() :
+    """Lance une fenetre qui permet de selectionner differents types de parties"""
+    
+    def rapide():
+        commencer(5, 12)
+        Fen.destroy()
+    def normal():
+        commencer(7, 25)
+        Fen.destroy()
+    def long():
+        commencer(11, 25)
+        Fen.destroy()
+    
+    Fen = Tk()
+    btn_rapide = Button(Fen, text="Partie rapide", command=rapide)
+    btn_rapide.pack()
+    btn_normal = Button(Fen, text="Partie classique", command=normal)
+    btn_normal.pack()
+    btn_long = Button(Fen, text="Partie longue", command=long)
+    btn_long.pack()
+    Fen.mainloop()
+    
+
+def message(titre,texte) :
     """Affiche une fenetre pop up avec comme titre titre et texte texte
     S'efface au bout d'un court instant
     Fermable en appuyant sur Ok"""
+    
     f_pop=Toplevel()
     f_pop.title(titre)
     f_pop.geometry("250x120+500+300")
@@ -16,6 +43,7 @@ def message(titre,texte):
     b_Stop.after(4000, f_pop.destroy)
         
     f_pop.mainloop()
+
 
 def settingsNoms():
     """Fonction renvoyant une liste de noms rentrée par l'utilisateur.
