@@ -2,30 +2,8 @@
 
 from tkinter import *
 from PIL import Image, ImageTk
+import os.path
 
-
-def choixMode() :
-    """Lance une fenetre qui permet de selectionner differents types de parties"""
-    
-    def rapide():
-        commencer(5, 12)
-        Fen.destroy()
-    def normal():
-        commencer(7, 25)
-        Fen.destroy()
-    def long():
-        commencer(11, 25)
-        Fen.destroy()
-    
-    Fen = Tk()
-    btn_rapide = Button(Fen, text="Partie rapide", command=rapide)
-    btn_rapide.pack()
-    btn_normal = Button(Fen, text="Partie classique", command=normal)
-    btn_normal.pack()
-    btn_long = Button(Fen, text="Partie longue", command=long)
-    btn_long.pack()
-    Fen.mainloop()
-    
 
 def message(titre,texte) :
     """Affiche une fenetre pop up avec comme titre titre et texte texte
@@ -127,56 +105,37 @@ def settingsTextures():
     
     Fenetre=Tk()
     Fenetre.title("Sélection des textures packs")
-    Fenetre.geometry("500x400+400+220")
     
     l_Message=Label(Fenetre, text='\n\t\t\tVeuillez sélectionner un texture pack')
-    l_Message.grid(row=0, column=1, columnspan=2)
+    l_Message.grid(row=0, column=1, columnspan=3)
+    
+    listTextures = os.listdir("img/patern")
+    r_Choix = []
+    noms = []
+    labels = []
     
     valeur=IntVar()
     valeur.set(1)
-    r_Choix1=Radiobutton(Fenetre, variable=valeur, value=1)
-    r_Choix2=Radiobutton(Fenetre, variable=valeur, value=2)
-    r_Choix3=Radiobutton(Fenetre, variable=valeur, value=3)
-    r_Choix4=Radiobutton(Fenetre, variable=valeur, value=4)
-    r_Choix1.grid(row=1, column=1)
-    r_Choix2.grid(row=2, column=1)
-    r_Choix3.grid(row=3, column=1)
-    r_Choix4.grid(row=4, column=1)
     
-    f_1=Frame(Fenetre, relief=GROOVE, border=3)
-    img1 = Image.open("img/patern/1/1.png").resize((50,50))
-    img1 = ImageTk.PhotoImage(img1)
-    lbl1 = Label(Fenetre, image=img1)
-    lbl1.image = img1
-    lbl1.grid(row=1, column=2)
-    
-    f_2=Frame(Fenetre, relief=GROOVE, border=3)
-    img2 = Image.open("img/patern/2/1.png").resize((50,50))
-    img2 = ImageTk.PhotoImage(img2)
-    lbl2 = Label(Fenetre, image=img2)
-    lbl2.image = img2
-    lbl2.grid(row=2, column=2)
-    
-    f_3=Frame(Fenetre, relief=GROOVE, border=3)
-    img3 = Image.open("img/patern/3/1.png").resize((50,50))
-    img3 = ImageTk.PhotoImage(img3)
-    lbl3 = Label(Fenetre, image=img3)
-    lbl3.image = img3
-    lbl3.grid(row=3, column=2)
-    
-    f_4=Frame(Fenetre, relief=GROOVE, border=3)
-    img4 = Image.open("img/patern/4/1.png").resize((50,50))
-    img4 = ImageTk.PhotoImage(img4)
-    lbl4 = Label(Fenetre, image=img4)
-    lbl4.image = img4
-    lbl4.grid(row=4, column=2)
-    
-    #todo: insérer dans chaque Frame l'image de la case en T
-    
+    for ligne in range(len(listTextures)) :
+        texture = listTextures[ligne]
+        r_Choix += [Radiobutton(Fenetre, variable=valeur, value=ligne)]
+        r_Choix[ligne].grid(row=ligne+1, column=1)
+        
+        noms += [Label(Fenetre, text=texture)]
+        noms[ligne].grid(row=ligne+1, column=2)
+        
+        img = Image.open("img/patern/" + texture + "/1.png").resize((50,50))
+        img = ImageTk.PhotoImage(img)
+        labels += [Label(Fenetre, image=img)]
+        labels[ligne].image = img
+        labels[ligne].grid(row=ligne+1, column=3)
+        
+    Fenetre.update()
     b_Valider=Button(Fenetre, text='Valider', command=Fenetre.destroy)
-    b_Valider.grid(row=5, column=1)
+    b_Valider.grid(row=len(listTextures)+2, column=2)
     
     Fenetre.mainloop()
     
     a=valeur.get()
-    return(a)
+    return(listTextures[a])

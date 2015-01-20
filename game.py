@@ -28,27 +28,27 @@ def insererPiece(case) :
 
     global carte, caseDispo
     x,y = coordonneesCase(case)
-    changement = False
+    changement = False 
     
-    for i in range(4): #todo: ptet que sans deepcopy ca bug
+    for i in range(4):
         tournerCarte()
         tournerCase(caseDispo)
-        x,y = y , taille()-x-1 # La ligne qui m'a fait le plus réflechir : réflechir en terme de vecteurs
+        x,y = y , taille()-x-1 # Fait roter les coordonnées : Réflechir en terme de vecteurs
         if x == 0 and y%2 : # La case à inserer est à gauche
             changement = True
-            lignesPrecedentes = carte[0:y*taille()]
+            lignesPrecedentes = carte[0:y*taille()] # Les lignes non modifiées
             ligne = carte[y*taille() : (y+1)*taille() ] # La ligne qui nous interesse
-            lignesFin = carte[(y+1)*taille():]
+            lignesFin = carte[(y+1)*taille():] # Les autres lignes non modifiées
             
-            ligne = [caseDispo[:]] + ligne[:]
-            caseDispo[:] = ligne[-1]
+            ligne = [caseDispo[:]] + ligne[:] # La magie de python
+            caseDispo[:] = ligne[-1] # Case sortie
             caseDispo[CASE_JOUEURS] = []
             ligne[0][CASE_JOUEURS] += ligne[-1][CASE_JOUEURS] # Fait traverser la carte aux joueurs sortis
             del ligne[-1]
             
             carte[:] = lignesPrecedentes + ligne + lignesFin
     if changement :
-        etapeSuivante()
+        etapeSuivante() # Progression du jeu
          
          
 def choixMode() :
@@ -61,7 +61,7 @@ def choixMode() :
         commencer(7, 25)
         Fen.destroy()
     def long():
-        commencer(11, 25)
+        commencer(11, 31)
         Fen.destroy()
     
     Fen = Tk()

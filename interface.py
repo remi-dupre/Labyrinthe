@@ -8,7 +8,7 @@ import os.path
 
 TEXTURE=str(settingsTextures())
 
-CANVAS_SIZE = 500 # taille de la fenetre
+CANVAS_SIZE = 600 # taille de la fenetre
 
 PATERN = [ [False, False, True, True],   # Les patern de case correspondant aux images enregistrées
            [True, False, True, True],
@@ -208,14 +208,11 @@ def tournerCaseDispo(nombre = 1) :
 
 fenJeu=Tk()
 
-affichageTerrain = Canvas(fenJeu, bg='grey', width=CANVAS_SIZE, height=CANVAS_SIZE)
+affichageTerrain = Canvas(fenJeu, width=CANVAS_SIZE, height=CANVAS_SIZE)
 affichageTerrain.pack()
 
 objectifsJoueur = Label(fenJeu)
 objectifsJoueur.pack(side=LEFT)
-
-joueurCourrant = Label(fenJeu)
-joueurCourrant.pack(side=RIGHT)
 
 choixRotation = Canvas(fenJeu, bg='grey', width=CANVAS_SIZE//(3*taille()), height=CANVAS_SIZE//taille())
 choixRotation.pack(side=RIGHT)
@@ -224,7 +221,10 @@ caseLibre = Label(fenJeu)
 caseLibre.pack(side=RIGHT)
 
 tourner=Button(fenJeu, text='Rotation',width=10,command=tournerCaseDispo)
-tourner.pack(side=BOTTOM)
+#tourner.pack(side=BOTTOM)
 
 labelEtat=Label(fenJeu, text="",width=50, fg='Black')
-labelEtat.pack(side=BOTTOM)
+#labelEtat.pack(side=BOTTOM)
+
+joueurCourrant = Label(fenJeu)
+joueurCourrant.pack(side=BOTTOM)
